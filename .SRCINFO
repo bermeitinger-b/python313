@@ -6,7 +6,7 @@ pkgbase = python313
 	arch = i686
 	arch = x86_64
 	license = PSF-2.0
-	makedepends = bluez-libs
+	makedepends = boost-libs
 	makedepends = mpdecimal
 	makedepends = gdb
 	depends = bzip2
@@ -21,6 +21,7 @@ pkgbase = python313
 	optdepends = mpdecimal: for decimal
 	optdepends = xz: for lzma
 	optdepends = tk: for tkinter
+	provides = python=3.13.0
 	source = https://www.python.org/ftp/python/3.13.0/Python-3.13.0.tar.xz
 	validpgpkeys = 0D96DF4D4110E5C43FBFB17F2D347EA6AA65421D
 	validpgpkeys = E3FF2839C048B25C084DEBE9B26995E310250568
