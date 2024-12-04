@@ -11,8 +11,9 @@ pkgdesc="Major release 3.13 of the Python high-level programming language"
 arch=('i686' 'x86_64')
 license=('PSF-2.0')
 url="https://www.python.org/"
-depends=('bzip2' 'expat' 'gdbm' 'libffi' 'libnsl' 'libxcrypt' 'openssl' 'zlib' 'tzdata' 'mpdecimal')
-makedepends=('tk' 'sqlite' 'bluez-libs' 'llvm' 'gdb' 'xorg-server-xvfb' 'ttf-font')
+depends=('bzip2' 'expat' 'gdbm' 'libffi' 'libnsl' 'libxcrypt' 'openssl' 'zlib')
+makedepends=('boost-libs' 'mpdecimal' 'gdb')
+optdepends=('sqlite' 'mpdecimal: for decimal' 'xz: for lzma' 'tk: for tkinter')
 source=(https://www.python.org/ftp/python/${_pyver}/Python-${pkgver}.tar.xz)
 sha256sums=('9cf9427bee9e2242e3877dd0f6b641c1853ca461f39d6503ce260a59c80bf0d9')
 validpgpkeys=(
@@ -48,7 +49,8 @@ build() {
               --with-system-libmpdec \
               --enable-loadable-sqlite-extensions \
               --without-ensurepip \
-              --with-tzpath=/usr/share/zoneinfo
+              --with-tzpath=/usr/share/zoneinfo \
+              --enable-optimizations
 
   # Obtain next free server number for xvfb-run; this even works in a chroot environment.
   export servernum=99
