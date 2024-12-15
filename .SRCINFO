@@ -1,12 +1,12 @@
 pkgbase = python313
 	pkgdesc = Major release 3.13 of the Python high-level programming language
 	pkgver = 3.13.1
-	pkgrel = 1
+	pkgrel = 2
 	url = https://www.python.org/
 	arch = i686
 	arch = x86_64
 	license = PSF-2.0
-	makedepends = boost-libs
+	makedepends = bluez-libs
 	makedepends = mpdecimal
 	makedepends = gdb
 	depends = bzip2

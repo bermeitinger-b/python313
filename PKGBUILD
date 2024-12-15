@@ -3,7 +3,7 @@
 
 pkgname=python313
 pkgver=3.13.1
-pkgrel=1
+pkgrel=2
 _pyver=3.13.1
 _pybasever=3.13
 _pymajver=3
@@ -12,7 +12,7 @@ arch=('i686' 'x86_64')
 license=('PSF-2.0')
 url="https://www.python.org/"
 depends=('bzip2' 'expat' 'gdbm' 'libffi' 'libnsl' 'libxcrypt' 'openssl' 'zlib')
-makedepends=('boost-libs' 'mpdecimal' 'gdb')
+makedepends=('bluez-libs' 'mpdecimal' 'gdb')
 optdepends=('sqlite' 'mpdecimal: for decimal' 'xz: for lzma' 'tk: for tkinter')
 source=(https://www.python.org/ftp/python/${_pyver}/Python-${pkgver}.tar.xz)
 sha256sums=('9cf9427bee9e2242e3877dd0f6b641c1853ca461f39d6503ce260a59c80bf0d9')
@@ -25,9 +25,11 @@ provides=("python=$pkgver")
 prepare() {
   cd "${srcdir}/Python-${pkgver}"
 
-  # Ensure that we are using the system copy of various libraries (expat, libffi, and libffi),
+  # Ensure that we are using the system copy of various libraries (expat, zlib, and libffi),
   # rather than copies shipped in the tarball
   rm -rf Modules/expat
+  rm -rf Modules/zlib
+  rm -rf Modules/_ctypes/{darwin,libffi}*
   rm -rf Modules/_decimal/libmpdec
 }
 
@@ -35,29 +37,22 @@ build() {
   cd "${srcdir}/Python-${pkgver}"
 
   CFLAGS="${CFLAGS} -fno-semantic-interposition -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer"
-  CFLAGS="${CFLAGS/-O2/-O3} -ffat-lto-objects"
-  CFLAGS="${CFLAGS} -march=znver4 -mtune=znver4"
   ./configure ax_cv_c_float_words_bigendian=no \
               --prefix=/usr \
               --enable-shared \
               --with-computed-gotos \
-              --enable-optimizations \
               --with-lto \
               --enable-ipv6 \
               --with-system-expat \
               --with-dbmliborder=gdbm:ndbm \
+              --with-system-ffi \
               --with-system-libmpdec \
               --enable-loadable-sqlite-extensions \
               --without-ensurepip \
               --with-tzpath=/usr/share/zoneinfo \
               --enable-optimizations
 
-  # Obtain next free server number for xvfb-run; this even works in a chroot environment.
-  export servernum=99
-  while ! xvfb-run -a -n "$servernum" /bin/true 2>/dev/null; do servernum=$((servernum+1)); done
-
-  # Build
-  LC_CTYPE=en_US.UTF-8 xvfb-run -s "-screen 0 1920x1080x16 -ac +extension GLX" -a -n "$servernum" make EXTRA_CFLAGS="$CFLAGS"
+  make EXTRA_CFLAGS="$CFLAGS"
 }
 
 package() {
