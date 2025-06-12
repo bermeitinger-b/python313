@@ -9,10 +9,10 @@ shopt -s extglob
 
 pkgbase=python
 pkgname=(python python-tests)
-pkgver=3.13.4
+pkgver=3.13.5
 pkgrel=1
 _pybasever=${pkgver%.*}
-pkgdesc="The Python programming language"
+pkgdesc="The Python programming language (3.13)"
 arch=('x86_64')
 license=('PSF-2.0')
 url="https://www.python.org/"
@@ -41,9 +41,9 @@ makedepends=(
 source=(
   "https://www.python.org/ftp/python/${pkgver%rc*}/Python-${pkgver}.tar.xz"{,.sigstore}
   EXTERNALLY-MANAGED)
-md5sums=('2e2a8eb2e1be50049dc4248d99a52f89'
-  '4e36b12d9c43b845348aafcadae0e56c'
-  '7d2680a8ab9c9fa233deb71378d5a654')
+md5sums=('dbaa8833aa736eddbb18a6a6ae0c10fa'
+         '3caf15e9ffe14084cc34287d97c9f400'
+         '7d2680a8ab9c9fa233deb71378d5a654')
 provides=('python' 'python3' 'python-externally-managed')
 
 verify() {
@@ -56,16 +56,16 @@ verify() {
 }
 
 prepare() {
-  cd "${srcdir}/Python-${pkgver}" || exit
+  cd "${srcdir}/Python-${pkgver}" || exit 1
 
   # Ensure that we are using the system copy of various libraries (expat, libffi, and libmpdec),
   # rather than copies shipped in the tarball
-  rm -r Modules/expat
-  rm -r Modules/_decimal/libmpdec
+  rm -rf Modules/expat
+  rm -rf Modules/_decimal/libmpdec
 }
 
 build() {
-  cd "${srcdir}/Python-${pkgver}" || exit
+  cd "${srcdir}/Python-${pkgver}" || exit 1
 
   # PGO should be done with -O3
   CFLAGS="${CFLAGS/-O2/-O3} -ffat-lto-objects"
@@ -105,7 +105,7 @@ package_python() {
   provides=('python3' 'python-externally-managed')
   replaces=('python3' 'python-externally-managed')
 
-  cd "${srcdir}/Python-${pkgver}" || exit
+  cd "${srcdir}/Python-${pkgver}" || exit 1
 
   # Hack to avoid building again
   sed -i 's/^all:.*$/all: build_all/' Makefile
@@ -127,17 +127,18 @@ package_python() {
   # PEP668
   install -Dm644 "$srcdir"/EXTERNALLY-MANAGED -t "${pkgdir}/usr/lib/python${_pybasever}/"
 
-  # License
-  install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+  # Split tests
+  cd "${pkgdir}/usr/lib/python${_pybasever}/" || exit 1
+  rm -r {test,idlelib/idle_test}
 }
 
 package_python-tests() {
   pkgdesc="Regression tests packages for Python"
   depends=('python')
 
-  cd "${srcdir}/Python-${pkgver}" || exit
+  cd "${srcdir}/Python-${pkgver}" || exit 1
 
   make DESTDIR="${pkgdir}" EXTRA_CFLAGS="$CFLAGS" libinstall
-  cd "$pkgdir"/usr/lib/python*/ || exit
+  cd "${pkgdir}/usr/lib/python${_pybasever}/" || exit 1
   rm -r !(test)
 }

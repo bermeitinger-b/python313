@@ -3,3 +3,4 @@ src
 *.tar.xz
 *.tar.xz.sigstore
 *.pkg.tar.zst
+*.pkg.tar.zst.sig
