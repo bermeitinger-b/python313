@@ -9,8 +9,8 @@ shopt -s extglob
 
 pkgbase=python
 pkgname=(python python-tests)
-pkgver=3.13.5
-pkgrel=4
+pkgver=3.13.6
+pkgrel=1
 _pybasever=${pkgver%.*}
 pkgdesc="The Python programming language (3.13)"
 arch=('x86_64')
@@ -41,9 +41,9 @@ makedepends=(
 source=(
   "https://www.python.org/ftp/python/${pkgver%rc*}/Python-${pkgver}.tar.xz"{,.sigstore}
   EXTERNALLY-MANAGED)
-md5sums=('dbaa8833aa736eddbb18a6a6ae0c10fa'
-  '3caf15e9ffe14084cc34287d97c9f400'
-  '7d2680a8ab9c9fa233deb71378d5a654')
+md5sums=('4170b57e642c15a1dfed17313ec57cc2'
+         'a792650ead0be002cc633dc3cc4c774b'
+         '7d2680a8ab9c9fa233deb71378d5a654')
 provides=('python' 'python3' 'python-externally-managed')
 
 verify() {
