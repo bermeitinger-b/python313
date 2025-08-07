@@ -10,7 +10,7 @@ shopt -s extglob
 pkgbase=python
 pkgname=(python python-tests)
 pkgver=3.13.5
-pkgrel=3
+pkgrel=4
 _pybasever=${pkgver%.*}
 pkgdesc="The Python programming language (3.13)"
 arch=('x86_64')
@@ -42,8 +42,8 @@ source=(
   "https://www.python.org/ftp/python/${pkgver%rc*}/Python-${pkgver}.tar.xz"{,.sigstore}
   EXTERNALLY-MANAGED)
 md5sums=('dbaa8833aa736eddbb18a6a6ae0c10fa'
-         '3caf15e9ffe14084cc34287d97c9f400'
-         '7d2680a8ab9c9fa233deb71378d5a654')
+  '3caf15e9ffe14084cc34287d97c9f400'
+  '7d2680a8ab9c9fa233deb71378d5a654')
 provides=('python' 'python3' 'python-externally-managed')
 
 verify() {
@@ -70,27 +70,53 @@ build() {
   # PGO should be done with -O3
   CFLAGS="${CFLAGS/-O2/-O3} -ffat-lto-objects"
 
-  export CFLAGS+=" -fno-semantic-interposition -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer"
-  export CXXLAGS+=" -fno-semantic-interposition -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer"
+  export CFLAGS+=" -fno-semantic-interposition"
+  export CXXLAGS+=" -fno-semantic-interposition"
 
   # Disable bundled pip & setuptools
   # BOLT is disabled due LLVM or upstream issue
   # https://github.com/python/cpython/issues/124948
   ./configure \
     --prefix=/usr \
+    --enable-ipv6 \
+    --enable-loadable-sqlite-extensions \
+    --enable-optimizations \
     --enable-shared \
     --with-computed-gotos \
-    --with-lto \
-    --enable-ipv6 \
-    --with-system-expat \
     --with-dbmliborder=gdbm:ndbm \
+    --with-lto \
+    --with-system-expat \
     --with-system-libmpdec \
-    --enable-loadable-sqlite-extensions \
-    --without-ensurepip \
     --with-tzpath=/usr/share/zoneinfo \
-    --enable-optimizations
+    --without-ensurepip
 
   make EXTRA_CFLAGS="$CFLAGS"
+}
+
+check() {
+  # test_tk: test_askcolor tkinter.test.test_tkinter.test_colorchooser.DefaultRootTest hangs
+  # test_pyexpat: our `debug` implementation rewrites source location, which breaks the build-time
+  #               only test test.test_pyexpat.HandlerExceptionTest as it cannot find source file in
+  #               the to-be-installed debug package
+  # test_socket: https://github.com/python/cpython/issues/79428
+  # test_unittest: https://github.com/python/cpython/issues/108927
+  # test_tkk: AssertionError: Tuples differ: (0,) != ('0',)
+  # test_ssl: flaky tests issues
+
+  cd "Python-${pkgver}" || exit 1
+
+  LD_LIBRARY_PATH="${srcdir}/Python-${pkgver}":${LD_LIBRARY_PATH} \
+    "${srcdir}/Python-${pkgver}/python" \
+    -m test.regrtest \
+    -v -uall \
+    -x test_tk \
+    -x test_ttk \
+    -x test_ttk.test_widgets \
+    -x test_tkinter \
+    -x test_pyexpat \
+    -x test_socket \
+    -x test_unittest \
+    -x test_ssl
 }
 
 package_python() {
@@ -110,22 +136,25 @@ package_python() {
   # Hack to avoid building again
   sed -i 's/^all:.*$/all: build_all/' Makefile
 
+  # PGO should be done with -O3
+  CFLAGS="${CFLAGS/-O2/-O3}"
+
   make DESTDIR="${pkgdir}" EXTRA_CFLAGS="$CFLAGS" install
 
   # Why are these not done by default...
-  ln -s python3 "${pkgdir}"/usr/bin/python
-  ln -s python3-config "${pkgdir}"/usr/bin/python-config
-  ln -s idle3 "${pkgdir}"/usr/bin/idle
-  ln -s pydoc3 "${pkgdir}"/usr/bin/pydoc
-  ln -s python${_pybasever}.1 "${pkgdir}"/usr/share/man/man1/python.1
+  ln -s "python3" "${pkgdir}/usr/bin/python"
+  ln -s "python3-config" "${pkgdir}/usr/bin/python-config"
+  ln -s "idle3" "${pkgdir}/usr/bin/idle"
+  ln -s "pydoc3" "${pkgdir}/usr/bin/pydoc"
+  ln -s "python${_pybasever}.1" "${pkgdir}/usr/share/man/man1/python.1"
 
   # some useful "stuff" FS#46146
-  install -dm755 "${pkgdir}"/usr/lib/python"${_pybasever}"/Tools/{i18n,scripts}
-  install -m755 Tools/i18n/{msgfmt,pygettext}.py "${pkgdir}"/usr/lib/python"${_pybasever}"/Tools/i18n/
-  install -m755 Tools/scripts/{README,*py} "${pkgdir}"/usr/lib/python"${_pybasever}"/Tools/scripts/
+  install -dm755 "${pkgdir}/usr/lib/python${_pybasever}/Tools/"{i18n,scripts}
+  install -m755 "Tools/i18n/"{msgfmt,pygettext}".py" "${pkgdir}/usr/lib/python${_pybasever}/Tools/i18n/"
+  install -m755 "Tools/scripts/"{README,*py} "${pkgdir}/usr/lib/python${_pybasever}/Tools/scripts/"
 
   # PEP668
-  install -Dm644 "$srcdir"/EXTERNALLY-MANAGED -t "${pkgdir}/usr/lib/python${_pybasever}/"
+  install -Dm644 "${srcdir}/EXTERNALLY-MANAGED" -t "${pkgdir}/usr/lib/python${_pybasever}/"
 
   # Split tests
   cd "${pkgdir}/usr/lib/python${_pybasever}/" || exit 1
