@@ -1,4 +1,4 @@
-pkgbase = python313
+pkgbase = python
 	pkgdesc = The Python programming language (3.13)
 	pkgver = 3.13.8
 	pkgrel = 2
@@ -23,6 +23,8 @@ pkgbase = python313
 	depends = zlib
 	depends = tzdata
 	depends = mpdecimal
+	provides = python
+	provides = python3
 	source = https://www.python.org/ftp/python/3.13.8/Python-3.13.8.tar.xz
 	source = https://www.python.org/ftp/python/3.13.8/Python-3.13.8.tar.xz.sigstore
 	source = EXTERNALLY-MANAGED
@@ -30,4 +32,4 @@ pkgbase = python313
 	md5sums = 7a0198ae79fa3ab6989bcf435146787a
 	md5sums = 7d2680a8ab9c9fa233deb71378d5a654
 
-pkgname = python313
+pkgname = python

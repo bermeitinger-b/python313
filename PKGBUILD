@@ -7,7 +7,7 @@
 
 shopt -s extglob
 
-pkgname=python313
+pkgname=python
 pkgver=3.13.8
 pkgrel=2
 _pybasever=${pkgver%.*}
@@ -44,6 +44,7 @@ source=(
 md5sums=('ba3da8187b03db6f42052f8707c22564'
          '7a0198ae79fa3ab6989bcf435146787a'
          '7d2680a8ab9c9fa233deb71378d5a654')
+provides=("python" "python3")
 
 verify() {
   cosign verify-blob \
@@ -97,7 +98,14 @@ build() {
 package() {
   cd "${srcdir}/Python-${pkgver}" || exit 1
   # altinstall: /usr/bin/pythonX.Y but not /usr/bin/python or /usr/bin/pythonX
-  make DESTDIR="${pkgdir}" altinstall maninstall
+  make DESTDIR="${pkgdir}" install
+
+  # Symlinks that define this as the default Python
+  ln -s "python3" "${pkgdir}/usr/bin/python"
+  ln -s "python3-config" "${pkgdir}/usr/bin/python-config"
+  ln -s "idle3" "${pkgdir}/usr/bin/idle"
+  ln -s "pydoc3" "${pkgdir}/usr/bin/pydoc"
+  ln -s "python${_pybasever}.1" "${pkgdir}/usr/share/man/man1/python.1"
 
   # Split tests
   rm -r "$pkgdir"/usr/lib/python*/{test,idlelib/idle_test}
