@@ -1,6 +1,6 @@
 pkgbase = python
 	pkgdesc = The Python programming language (3.13)
-	pkgver = 3.13.9
+	pkgver = 3.13.10
 	pkgrel = 1
 	url = https://www.python.org/
 	arch = x86_64
@@ -25,11 +25,11 @@ pkgbase = python
 	depends = mpdecimal
 	provides = python
 	provides = python3
-	source = https://www.python.org/ftp/python/3.13.9/Python-3.13.9.tar.xz
-	source = https://www.python.org/ftp/python/3.13.9/Python-3.13.9.tar.xz.sigstore
+	source = https://www.python.org/ftp/python/3.13.10/Python-3.13.10.tar.xz
+	source = https://www.python.org/ftp/python/3.13.10/Python-3.13.10.tar.xz.sigstore
 	source = EXTERNALLY-MANAGED
-	md5sums = 516aabdf3de01eeefb6de1aacf9df810
-	md5sums = f353157e646b17cf3908c06e18b81da8
+	md5sums = 5ada33c7f08d5d2df881657bdb8e848d
+	md5sums = aafd36969156caa849b0e3f69fe16b63
 	md5sums = 7d2680a8ab9c9fa233deb71378d5a654
 
 pkgname = python

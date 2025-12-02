@@ -8,7 +8,7 @@
 shopt -s extglob
 
 pkgname=python
-pkgver=3.13.9
+pkgver=3.13.10
 pkgrel=1
 _pybasever=${pkgver%.*}
 _pymajver=${_pybasever%%.*}
@@ -41,8 +41,8 @@ makedepends=(
 source=(
   "https://www.python.org/ftp/python/${pkgver%rc*}/Python-${pkgver}.tar.xz"{,.sigstore}
   EXTERNALLY-MANAGED)
-md5sums=('516aabdf3de01eeefb6de1aacf9df810'
-         'f353157e646b17cf3908c06e18b81da8'
+md5sums=('5ada33c7f08d5d2df881657bdb8e848d'
+         'aafd36969156caa849b0e3f69fe16b63'
          '7d2680a8ab9c9fa233deb71378d5a654')
 provides=("python" "python3")
 
@@ -111,8 +111,8 @@ package() {
   rm -r "$pkgdir"/usr/lib/python*/{test,idlelib/idle_test}
 
   # Avoid conflicts with the main 'python' package.
-  rm -f "${pkgdir}/usr/lib/libpython${_pymajver}.so"
-  rm -f "${pkgdir}/usr/share/man/man1/python${_pymajver}.1"
+  #  rm -f "${pkgdir}/usr/lib/libpython${_pymajver}.so"
+  #  rm -f "${pkgdir}/usr/share/man/man1/python${_pymajver}.1"
 
   # Clean-up reference to build directory
   sed -i "s|$srcdir/Python-${pkgver}:||" "$pkgdir/usr/lib/python${_pybasever}/config-${_pybasever}-${CARCH}-linux-gnu/Makefile"
