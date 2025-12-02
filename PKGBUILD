@@ -8,8 +8,8 @@
 shopt -s extglob
 
 pkgname=python
-pkgver=3.13.8
-pkgrel=2
+pkgver=3.13.9
+pkgrel=1
 _pybasever=${pkgver%.*}
 _pymajver=${_pybasever%%.*}
 pkgdesc="The Python programming language (3.13)"
@@ -41,8 +41,8 @@ makedepends=(
 source=(
   "https://www.python.org/ftp/python/${pkgver%rc*}/Python-${pkgver}.tar.xz"{,.sigstore}
   EXTERNALLY-MANAGED)
-md5sums=('ba3da8187b03db6f42052f8707c22564'
-         '7a0198ae79fa3ab6989bcf435146787a'
+md5sums=('516aabdf3de01eeefb6de1aacf9df810'
+         'f353157e646b17cf3908c06e18b81da8'
          '7d2680a8ab9c9fa233deb71378d5a654')
 provides=("python" "python3")
 
